@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.OrderMapper">
+
+    <insert id="insert" parameterType="com.example.entity.Order">
+        insert into `order`(order_no, user_id, screening_id, seat_ids, total_price, discount_price, 
+        actual_price, status, create_time, pay_time, coupon_id)
+        values (#{orderNo}, #{userId}, #{screeningId}, #{seatIds}, #{totalPrice}, #{discountPrice}, 
+        #{actualPrice}, #{status}, #{createTime}, #{payTime}, #{couponId})
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Order">
+        update `order` set order_no = #{orderNo}, user_id = #{userId}, screening_id = #{screeningId}, 
+        seat_ids = #{seatIds}, total_price = #{totalPrice}, discount_price = #{discountPrice}, 
+        actual_price = #{actualPrice}, status = #{status}, create_time = #{createTime}, 
+        pay_time = #{payTime}, coupon_id = #{couponId}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from `order` where id = #{id}
+    </delete>
+
+    <select id="selectAll" resultType="com.example.entity.Order">
+        select o.*, u.name as userName, f.name as filmName,
+        concat(h.name, ' ', date_format(s.start_time, '%Y-%m-%d %H:%i')) as screeningInfo
+        from `order` o
+        left join user u on o.user_id = u.id
+        left join screening s on o.screening_id = s.id
+        left join film f on s.film_id = f.id
+        left join hall h on s.hall_id = h.id
+        left join coupon c on o.coupon_id = c.id
+        <where>
+            <if test="userId != null">and o.user_id = #{userId}</if>
+            <if test="status != null">and o.status = #{status}</if>
+            <if test="orderNo != null">and o.order_no = #{orderNo}</if>
+        </where>
+        order by o.create_time desc
+    </select>
+
+</mapper>

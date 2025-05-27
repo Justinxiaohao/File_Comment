@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.SeatMapper">
+
+    <insert id="insert" parameterType="com.example.entity.Seat">
+        insert into seat(`row`, `column`, hall_id, status)
+        values (#{row}, #{column}, #{hallId}, #{status})
+    </insert>
+
+    <update id="updateById" parameterType="com.example.entity.Seat">
+        update seat set `row` = #{row}, `column` = #{column}, hall_id = #{hallId}, status = #{status}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteById" parameterType="java.lang.Integer">
+        delete from seat where id = #{id}
+    </delete>
+
+    <select id="selectAll" resultType="com.example.entity.Seat">
+        select seat.*, hall.name as hallName from seat
+        left join hall on seat.hall_id = hall.id
+        <where>
+            <if test="hallId != null">and seat.hall_id = #{hallId}</if>
+            <if test="status != null">and seat.status = #{status}</if>
+        </where>
+        order by seat.hall_id, seat.row, seat.column
+    </select>
+
+</mapper>
